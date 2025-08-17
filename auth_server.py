@@ -1,6 +1,4 @@
 from mcp.server.fastmcp import FastMCP
-from firebase_admin import auth, credentials, initialize_app
-from firebase_admin.auth import verify_id_token
 import os
 import firebase_admin
 cred_obj = firebase_admin.credentials.Certificate(os.getenv('FIREBASE_SECURITY_FILE_PATH'))
