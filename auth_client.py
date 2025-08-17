@@ -18,7 +18,8 @@ import requests
 from fastapi.requests import Request
 from fastapi.responses import Response
 from fastapi import HTTPException
-cred_obj = firebase_admin.credentials.Certificate('/Users/bootlabs/mcp_authorization/mcpauth-e277f-firebase-adminsdk-fbsvc-d2f8070387.json')
+from model import PromptRequest,usermodel,loginmodel
+cred_obj = firebase_admin.credentials.Certificate(os.getenv('FIREBASE_SECURITY_FILE_PATH'))
 firebase_admin.initialize_app(cred_obj)
 
 load_dotenv()
@@ -32,20 +33,7 @@ app = FastAPI()
 server_params = StdioServerParameters(
     command="python",
     args=["auth_server.py"]
-)
-
-class PromptRequest(BaseModel):
-    user_prompt: str
-
-class usermodel(BaseModel):
-    name:str
-    email:str
-    password:str  
-
-class loginmodel(BaseModel):
-    email:str
-    password:str      
-
+)  
 
 @app.post('/createuser')
 def create_user(user:usermodel):
@@ -62,7 +50,7 @@ def create_user(user:usermodel):
 
 @app.post('/login')
 def login(user:loginmodel,response:Response):
-     FIREBASE_API_KEY='AIzaSyA8NOsjH37GwjEsIoWkqjvswb-Qdb5i0f8'
+     FIREBASE_API_KEY=os.getenv('FIREBASE_API_KEY')
      url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={FIREBASE_API_KEY}"
      payload = {
         
@@ -101,7 +89,7 @@ async def run_agent(req: PromptRequest, request: Request):
             response = await agent.ainvoke({
                 "messages": [("user", user_prompt)],
                 "config": {},
-                "token": token  # directly pass token
+                "token": token 
             })
 
             print("Agent invocation complete.")
